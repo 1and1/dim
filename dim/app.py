@@ -1,3 +1,7 @@
 from dim import create_app
+import os.path
 
-application = create_app
+testing = os.getenv("DIM_TESTING", False)
+db_mode = os.getenv("DIM_DB_MODE", None)
+
+application = create_app(db_mode, testing)
