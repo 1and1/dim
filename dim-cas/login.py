@@ -11,7 +11,7 @@ import urllib.parse
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py', silent=True)
-app.config.from_pyfile('/etc/dim/cas.cfg', silent=True)
+app.config.from_pyfile('/etc/cas/cas.cfg', silent=True)
 
 
 @app.after_request
