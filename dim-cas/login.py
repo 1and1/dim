@@ -61,10 +61,10 @@ def login():
     username = success.get('cas:user')
     attributes = success.get('cas:attributes')
 
-    last_name = ''
+    last_name = ''.encode('latin-1')
     if 'cas:lastName' in attributes:
         last_name = attributes['cas:lastName'].encode('latin-1')
-    first_name = ''
+    first_name = ''.encode('latin-1')
     if 'cas:firstName' in attributes:
         first_name = attributes['cas:firstName'].encode('latin-1')
     full_name = first_name + b" " + last_name
@@ -83,7 +83,7 @@ def login():
     )
     response.set_cookie(
       key='FULL_NAME',
-      value=full_name,
+      value=str(full_name,  'latin-1'),
       expires=datetime.now() + timedelta(seconds=24 * 3600)
     )
     return response
