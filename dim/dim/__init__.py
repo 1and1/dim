@@ -49,6 +49,7 @@ def create_app(db_mode: Optional[str] = None, testing: bool = False):
         )
 
     if 'LAYER3DOMAIN_WHITELIST' not in app.config:
+        print("LAYER3DOMAIN_WHITELIST is missing from configuration. Please consult the manual.")
         logging.error('LAYER3DOMAIN_WHITELIST not set')
         sys.exit(1)
     try:
@@ -56,6 +57,7 @@ def create_app(db_mode: Optional[str] = None, testing: bool = False):
             IP(ip_str) for ip_str in app.config['LAYER3DOMAIN_WHITELIST']
         ]
     except:
+        print("Could not parse LAYER3DOMAIN_WHITELIST from configuration. Please consult the manual.")
         logging.error('Error parsing LAYER3DOMAIN_WHITELIST', exc_info=True)
         sys.exit(1)
     db.init_app(app)
