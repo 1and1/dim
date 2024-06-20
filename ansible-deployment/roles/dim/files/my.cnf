@@ -1,0 +1,5 @@
+[client]
+user=root
+password=
+
+

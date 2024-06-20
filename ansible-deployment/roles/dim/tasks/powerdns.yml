@@ -1,0 +1,78 @@
+- name: Install PowerDNS packages
+  dnf:
+    name:
+      - pdns-backend-mysql
+      - pdns-tools
+      - pdns-recursor
+    state: present
+    update_cache: true
+
+- name: Delete PowerDNS config file
+  file:
+    path: "{{ pdns_conf_dir }}/pdns.conf"
+    state: absent
+
+- name: Create int directory
+  file:
+    path: "{{ pdns_conf_dir }}/int"
+    state: directory
+
+- name: Create pub directory
+  file:
+    path: "{{ pdns_conf_dir }}/pub"
+    state: directory
+
+- name: Copy pdns internal config
+  template:
+    src: pdns-int.conf.j2
+    dest: "{{ pdns_conf_dir }}/pdns-int.conf"
+
+- name: Copy pdns public config
+  template:
+    src: pdns-pub.conf.j2
+    dest: "{{ pdns_conf_dir }}/pdns-pub.conf"
+
+- name: Start and enabled pdns internal service
+  systemd:
+    name: pdns@int
+    state: started
+    enabled: true
+
+- name: Start and enabled pdns public service
+  systemd:
+    name: pdns@pub
+    state: started
+    enabled: true
+
+- name: Delete PowerDNS recursor config file
+  file:
+    path: "{{ pdns_recursor_conf_path }}/recursor.conf"
+    state: absent
+
+- name: Create PowerDNS recursor directory
+  file:
+    path: "{{ pdns_recursor_conf_path }}/int"
+    state: directory
+
+- name: Copy recursor-int config file
+  template:
+    src: recursor-int.conf.j2
+    dest: "{{ pdns_recursor_conf_path }}/recursor-int.conf"
+
+- name: Copy forward.zones file
+  template:
+    src: forward.zones.j2
+    dest: "{{ pdns_recursor_conf_path }}/int/forward.zones"
+
+- name: Copy nta.lua
+  template:
+    src: nta.lua.j2
+    dest: "{{ pdns_recursor_conf_path }}/int/nta.lua"
+
+- name: Start and enabled pdns recursor service
+  systemd:
+    name: pdns-recursor@int
+    state: started
+    enabled: true
+
+

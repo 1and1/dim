@@ -1,0 +1,67 @@
+# General
+install_ansible_modules: "true"
+disable_transparent_huge_pages: "true"
+setup_interface: "false"
+
+# Domain
+domain_name: "example.com"
+
+#DIM-Network
+network_path: "/etc/sysconfig/network-scripts"
+network_scripts_url: "https://dl.rockylinux.org/pub/rocky/9/devel/x86_64/os/Packages/n/network-scripts-10.11.5-1.el9.x86_64.rpm" # For rocky linux 9
+network_scripts_dest: "/tmp"
+network_scripts_package: "network-scripts-10.11.5-1.el9.x86_64.rpm"
+
+# DIM DB
+dim_db_name: "dim"
+pdns_int_db_name: "pdns_int"
+pdns_pub_db_name: "pdns_pub"
+
+
+# DIM DB info
+dim_db_user_name: "dim_user"
+dim_db_user_password: "dim_pass"
+dim_db_priv: "dim.*:ALL"
+dim_secret_key: "SuperSecretTtestkey"
+
+# pdns_int DB info
+dim_pdns_int_db_user_name: "dim_pdns_int_user"
+dim_pdns_int_db_user_password: "SuperSecret1"
+dim_pdns_int_db_priv: "pdns_int.*:INSERT,UPDATE,DELETE,SELECT"
+pdns_int_db_user_name: "pdns_int_user"
+pdns_int_db_user_password: "SuperSecret4"
+pdns_int_db_priv: "pdns_int.*:SELECT"
+
+# pdns_pub DB info
+dim_pdns_pub_db_user_name: "dim_pdns_pub_user"
+dim_pdns_pub_db_user_password: "SuperSecret2"
+dim_pdns_pub_db_priv: "pdns_pub.*:INSERT,UPDATE,DELETE,SELECT"
+pdns_pub_db_user_name: "pdns_pub_user"
+pdns_pub_db_user_password: "SuperSecret3"
+pdns_pub_db_priv: "pdns_pub.*:SELECT"
+
+# SQL
+sql_url: "https://raw.githubusercontent.com/1and1/dim/master/dim/pdns.sql"
+sql_file_path: "/tmp/pdns.sql"
+
+# PowerDNS
+pdns_conf_dir: "/etc/pdns"
+pdns_recursor_conf_path: "/etc/pdns-recursor"
+
+# DIM
+dim_config_path: "/etc/dim"
+din_example_path: "/srv/http/dim.example.com"
+
+dim_url: "https://github.com/1and1/dim/releases/download/dim-4.0.9/dim-4.0.9-1.el8.x86_64.rpm"
+dimclient_url: "https://github.com/1and1/dim/releases/download/dimclient-0.4.5/python3-dimclient-0.4.5-1.el8.x86_64.rpm"
+ndcli_url: "https://github.com/1and1/dim/releases/download/ndcli-4.0.3/python3-ndcli-4.0.3-1.el8.x86_64.rpm"
+dim_web_url: "https://github.com/1and1/dim/releases/download/dim-web-0.1/python3-dim-web-0.1-1.el8.x86_64.rpm"
+
+dim_repo: "https://github.com/1and1/dim"
+dim_repo_dest: "/usr/local/src/dim"
+
+# Httpd
+httpd_conf_path: "/etc/httpd/conf.d"
+
+# wsgi
+wsgi_path: "/opt/dim"
