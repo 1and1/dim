@@ -6,5 +6,6 @@ module.exports = {
   DIM_RPC: '"https://dim.example.com/dim/jsonrpc"',
   LOGIN: '"https://dim.example.com/cas"',
   LOGOUT: '"https://dim.example.com/cas/logout"',
+  BASE_URL: '"/"',
   SLEEP: 500
 };

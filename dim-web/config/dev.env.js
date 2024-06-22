@@ -8,5 +8,6 @@ module.exports = merge(prodEnv, {
   DIM_RPC: '"https://test.example.com:5000/jsonrpc"',
   LOGIN: '"https://test.example.com"',
   LOGOUT: '"https://test.example.com/logout"',
+  BASE_URL: '"/"',
   SLEEP: 1000
 });
