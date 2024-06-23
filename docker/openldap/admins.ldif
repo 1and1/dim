@@ -1,0 +1,9 @@
+dn: ou=groups,dc=example,dc=org
+objectClass: organizationalUnit
+ou: posix
+
+dn: cn=admins,ou=groups,dc=example,dc=org
+objectClass: groupOfMembers
+objectClass: posixGroup
+member: cn=admin,dc=example,dc=org
+gidNumber: 9999

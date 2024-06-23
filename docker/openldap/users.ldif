@@ -1,0 +1,36 @@
+dn: ou=users,dc=example,dc=org
+objectClass: organizationalUnit
+ou: posix
+
+dn: uid=john1,ou=users,dc=example,dc=org
+objectClass: organizationalPerson
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: top
+cn: john1
+uid: john1
+sn: doe
+givenName: john1
+userPassword: P@ssw0rd
+
+dn: uid=john2,ou=users,dc=example,dc=org
+objectClass: organizationalPerson
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: top
+cn: john2
+uid: john2
+sn: doe
+givenName: john2
+userPassword: P@ssw0rd
+
+dn: uid=john3,ou=users,dc=example,dc=org
+objectClass: organizationalPerson
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: top
+cn: john3
+uid: john3
+sn: doe
+givenName: john3
+userPassword: P@ssw0rd
