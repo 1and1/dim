@@ -2,10 +2,10 @@
 
 module.exports = {
   NODE_ENV: '"production"',
-  DIM_LOGIN: '"https://dim.example.com/dim/login"',
-  DIM_RPC: '"https://dim.example.com/dim/jsonrpc"',
-  LOGIN: '"https://dim.example.com/cas"',
-  LOGOUT: '"https://dim.example.com/cas/logout"',
-  BASE_URL: '"/"',
+  DIM_LOGIN:'"DIM_LOGIN_PLACE_HOLDER"',
+  DIM_RPC:  '"DIM_RPC_PLACE_HOLDER"',
+  LOGIN:    '"LOGIN_PLACE_HOLDER"',
+  LOGOUT:   '"LOGOUT_PLACE_HOLDER"',
+  BASE_URL: '"BASE_URL_PLACE_HOLDER"',
   SLEEP: 500
 };
