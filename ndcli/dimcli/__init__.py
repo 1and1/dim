@@ -572,6 +572,10 @@ def _make_create_rr(rr_type, params, profile, zonearg, create_linked=None):
             options.set_if(overwrite=args.overwrite)
         if rr_type != 'PTR' and '.' in args.name and not args.name.endswith('.'):
             self.warning("The left hand side of this record contains '.'. This will probably not do what you expect it to do.")
+
+        if "ttl" not in options and "default-ttl" in config:
+            options["ttl"] = config["default-ttl"]
+
         result = self.client.rr_create(**options)
         _print_messages(result)
     return create_simple_rr
