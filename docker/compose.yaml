@@ -1,0 +1,191 @@
+services:
+  pdns-int:
+    container_name: pdns-int
+    image: powerdns/pdns-auth-48:4.8.3
+    volumes:
+      - ./conf/pdsn-int.conf:/etc/powerdns/pdns.conf:ro
+    networks:
+      dim:
+        ipv4_address: 10.10.0.10
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+
+  pdns-pub:
+    container_name: pdns-pub
+    image: powerdns/pdns-auth-48:4.8.3
+    volumes:
+      - ./conf/pdsn-pub.conf:/etc/powerdns/pdns.conf:ro
+    networks:
+      dim:
+        ipv4_address: 10.10.0.20
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+
+  pdns-rec:
+    container_name: pdns-rec
+    image: powerdns/pdns-recursor-48:4.8.5
+    volumes:
+      - ./conf/pdsn-rec.conf:/etc/powerdns/pdns.conf:ro
+    networks:
+      dim:
+        ipv4_address: 10.10.0.30
+
+  mysql-db:
+    container_name: mysql-db
+    image: mariadb:10.11.8
+    healthcheck:
+      test: ["CMD", "mysql", "-u", "root"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    volumes:
+      - ./conf/mysql:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "True"
+    networks:
+      dim:
+        ipv4_address: 10.10.0.100
+
+  dim:
+    container_name: dim
+    build: ../dim/
+    volumes:
+      - ./conf/dim.cfg:/etc/dim/dim.cfg:ro
+    depends_on:
+      - mysql-db
+    networks:
+      dim:
+        ipv4_address: 10.10.0.101
+
+  dim-nginx:
+    container_name: dim-nginx
+    image: nginx:1.21
+    volumes:
+      - ./conf/dim-nginx.conf:/etc/nginx/conf.d/dim-nginx.conf:ro
+    depends_on:
+      - dim
+    ports:
+      - 8000:8000
+    networks:
+      dim:
+        ipv4_address: 10.10.0.102
+
+  dim-web:
+    container_name: dim-web
+    build:
+      context: ../dim-web/
+      dockerfile: Dockerfile
+      args:
+        - DIM_LOGIN=http://dim-nginx:8000/login
+        - DIM_RPC=http://dim-nginx:8000/jsonrpc
+        - LOGIN=http://dim-nginx:8000/dim-cas/
+        - LOGOUT=http://dim-nginx:8000/dim-cas/logout
+        - BASE_URL=/web
+    depends_on:
+      - dim
+    networks:
+      dim:
+        ipv4_address: 10.10.0.103
+
+  dim-cas:
+    container_name: dim-cas
+    build: ../dim-cas/
+    volumes:
+      - ./conf/cas.cfg:/etc/cas/cas.cfg:ro
+    depends_on:
+      - dim
+    networks:
+      dim:
+        ipv4_address: 10.10.0.104
+
+  pdns-output:
+    container_name: pdns-output
+    build: ../pdns-output/
+    volumes:
+      - ./conf/pdns-output.properties:/etc/dim/pdns-output.properties:ro
+    depends_on:
+      - mysql-db
+      - dim
+    networks:
+      dim:
+        ipv4_address: 10.10.0.105
+
+  cas:
+    build:
+      context: ./cas
+      args:
+        LDAP_PORT: ${LDAP_PORT:-389}
+        LDAP_ADMIN_PASSWORD: ${LDAP_ADMIN_PASSWORD:-admin}
+    container_name: cas
+    volumes:
+      - ./cas/config-run:/etc/cas/config
+    ports:
+      - "${CAS_PORT:-8443}:8443"
+    restart: unless-stopped
+    networks:
+      dim:
+        ipv4_address: 10.10.0.106
+
+  openldap:
+    image: osixia/openldap:1.5.0
+    container_name: openldap
+    volumes:
+      - ./openldap:/container/service/slapd/assets/config/bootstrap/ldif/custom:ro
+    ## If you need to persist data you have to uncomment below directories
+    # - ./ldap-storage/ldap_db:/var/lib/ldap
+    # - ./ldap-storage/ldap_config:/etc/ldap/slapd.d
+    environment:
+      - LDAP_ORGANISATION=example-org
+      - LDAP_DOMAIN=example.org
+      - LDAP_ADMIN_PASSWORD=${LDAP_ADMIN_PASSWORD:-admin}
+      - LDAP_CONFIG_PASSWORD=${LDAP_CONFIG_PASSWORD:-config}
+      - LDAP_RFC2307BIS_SCHEMA=true
+      - LDAP_REMOVE_CONFIG_AFTER_SETUP=true
+      - LDAP_TLS_VERIFY_CLIENT=never
+    networks:
+      dim:
+        ipv4_address: 10.10.0.107
+    ports:
+      - '${LDAP_PORT:-389}:389'
+    command:
+      - '--copy-service'
+
+  phpldapadmin:
+    image: osixia/phpldapadmin:0.9.0
+    container_name: phpldapadmin
+    environment:
+      PHPLDAPADMIN_LDAP_HOSTS: "openldap"
+      PHPLDAPADMIN_HTTPS: "false"
+    depends_on:
+      - openldap
+    ports:
+      - ${LDAP_UI_PORT:-18080}:80
+    networks:
+      dim:
+        ipv4_address: 10.10.0.108
+
+  ndcli:
+    container_name: ndcli
+    command: sleep infinity
+    build:
+      context: ../
+      dockerfile: ./ndcli/Dockerfile
+    environment:
+      - NDCLI_USERNAME=john3
+      - NDCLI_SERVER=http://dim-nginx:8000
+    depends_on:
+      - dim
+    networks:
+      dim:
+        ipv4_address: 10.10.0.109
+
+networks:
+  dim:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.0.0/16
+          gateway: 10.10.0.1

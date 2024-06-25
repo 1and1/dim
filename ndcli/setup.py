@@ -1,6 +1,4 @@
 from setuptools import setup
-import codecs
-import os
 from dimcli import version
 
 setup(name='ndcli',

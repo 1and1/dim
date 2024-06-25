@@ -3,7 +3,7 @@
 import argparse
 import syslog
 import os.path
-import sys
+import errno
 import dimclient
 import configparser
 import string

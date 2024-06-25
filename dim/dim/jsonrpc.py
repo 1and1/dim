@@ -1,10 +1,9 @@
-
-
 import datetime
 import hashlib
 import inspect
 import logging
 import urllib.request, urllib.parse, urllib.error
+from urllib.parse import urljoin
 import xml.etree.ElementTree as et
 
 import requests
@@ -113,7 +112,7 @@ def cas():
     '''
     service = request.args.get('service')
     ticket = request.args.get('ticket')
-    r = requests.get(urllib.urljoin(current_app.config['CAS_URL'], 'p3/serviceValidate'),
+    r = requests.get(urljoin(current_app.config['CAS_URL'], 'p3/serviceValidate'),
                      params=dict(service=service, ticket=ticket))
     if r.status_code == 200:
         xml = et.fromstring(r.content)

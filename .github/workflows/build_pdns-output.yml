@@ -18,7 +18,6 @@ jobs:
     - name: Build pdns-output
       run: gradle shadowJar
       working-directory: pdns-output
-      
     - uses: actions/upload-artifact@v2
       with:
         name: pdns-output
