@@ -1,0 +1,33 @@
+[project]
+name    = "dim"
+version = "5.0.2"
+dependencies = [
+  "mysqlclient>=1.4.6",
+  "SQLAlchemy~=1.4",
+  "ldap3~=2.9",
+  "Flask~=2.1",
+  "Flask-SQLAlchemy~=2.5",
+  "Jinja2~=3.1",
+  "dnspython~=2.1,!=2.2.0",
+  "requests~=2.27",
+  "pycryptodome~=3.14"
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["dim", "dim.scripts", "dim.models", "dim.sql"]
+
+#[tool.setuptools.package-data]
+#dim=["sql/*.sql"]
+
+#[project.entry-points."flask.commands"]
+#dim_manage_db="dim.manage_db:manage_db"
+#dim_manage_dim="dim.manage_dim:manage_dim"
+
+[project.scripts]
+dim = "dim.cli:cli"
+#dim_manage_db="dim.manage_db:cli"
+#dim_manage_dim="dim.manage_dim:cli"
