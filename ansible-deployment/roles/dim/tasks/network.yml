@@ -1,0 +1,33 @@
+- name: Enable network service
+  systemd:
+    name: network
+    enabled: true
+
+- name: Copy ifcfg-lo-pdns-int to {{ network_path }}
+  copy:
+    src: ifcfg-lo-pdns-int
+    dest: "{{ network_path }}/ifcfg-lo-pdns-int"
+    owner: root
+    group: root
+
+- name: Copy ifcfg-lo-pdns-pub to {{ network_path }}
+  copy:
+    src: ifcfg-lo-pdns-pub
+    dest: "{{ network_path }}/ifcfg-lo-pdns-pub"
+    owner: root
+    group: root
+
+- name: Copy ifcfg-lo-pdns-rec-int to {{ network_path }}
+  copy:
+    src: ifcfg-lo-pdns-rec-int
+    dest: "{{ network_path }}/ifcfg-lo-pdns-rec-int"
+    owner: root
+    group: root
+
+- name: Copy ifcfg-lo-bind-int to {{ network_path }}
+  copy:
+    src: ifcfg-lo-bind-int
+    dest: "{{ network_path }}/ifcfg-lo-bind-int"
+    owner: root
+    group: root
+

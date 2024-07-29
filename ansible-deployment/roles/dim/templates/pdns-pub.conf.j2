@@ -1,0 +1,37 @@
+setgid=pdns
+setuid=pdns
+version-string=powerdns
+local-port=53
+guardian=no
+daemon=no
+slave=no
+master=no
+expand-alias=yes
+resolver=127.3.0.1
+8bit-dns=yes
+max-tcp-connections=300
+disable-axfr=no
+allow-axfr-ips=127.0.0.0/8,::1
+cache-ttl=10
+query-cache-ttl=20
+negquery-cache-ttl=60
+queue-limit=200
+max-cache-entries=2000
+max-queue-length=1000
+udp-truncation-threshold=1220
+webserver=no
+tcp-control-port=
+log-timestamp=no
+logging-facility=6
+loglevel=3
+query-logging=no
+log-dns-details=no
+local-address=127.2.0.1
+
+# backend
+launch=gmysql
+gmysql-dnssec
+gmysql-socket=/var/lib/mysql/mysql.sock
+gmysql-dbname={{ pdns_pub_db_name }}
+gmysql-user={{ pdns_pub_db_user_name }}
+gmysql-password={{ pdns_pub_db_user_password }}

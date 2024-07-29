@@ -1,0 +1,17 @@
+---
+# tasks file for dim
+
+- name: Basic setup
+  include_tasks: basic.yml
+
+- name: Configure network
+  include_tasks: network.yml
+
+- name: Configure mariadb
+  include_tasks: mariadb.yml
+
+- name: Configure PowerDNS
+  include_tasks: powerdns.yml
+
+- name: Setup DIM
+  include_tasks: dim.yml

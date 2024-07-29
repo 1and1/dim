@@ -1,0 +1,98 @@
+- name: Install database packages
+  dnf:
+    name:
+      - mariadb-server
+    state: present
+    update_cache: true
+
+- name: Start and enable mariadb
+  systemd:
+    name: mariadb
+    state: started
+    enabled: true
+
+- name: Copy query.sh to /root
+  copy:
+    src: query.sh
+    dest: /root/query.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Execute query.sh
+  shell:
+    cmd: bash /root/query.sh
+
+- name: Copy mariadb config
+  copy:
+    src: my.cnf
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+    mode: 0600
+  notify: Restart mariadb
+
+- name: Create mariadb database
+  community.mysql.mysql_db:
+    name:
+      - "{{ dim_db_name }}"
+      - "{{ pdns_int_db_name }}"
+      - "{{ pdns_pub_db_name }}"
+    state: present
+
+- name: Ensure dim_user has the specified privileges
+  community.mysql.mysql_user:
+    name: "{{ dim_db_user_name}}"
+    password: "{{ dim_db_user_password }}"
+    host: "localhost"
+    priv: "{{ dim_db_priv }}"
+    state: present
+
+- name: Grant INSERT, UPDATE, DELETE, SELECT on pdns_int.* to user
+  community.mysql.mysql_user:
+    name: "{{ dim_pdns_int_db_user_name}}"
+    password: "{{ dim_pdns_int_db_user_password }}"
+    host: "localhost"
+    priv: "{{ dim_pdns_int_db_priv }}"
+    state: present
+
+- name: Grant INSERT, UPDATE, DELETE, SELECT on pdns_pub.* to user
+  community.mysql.mysql_user:
+    name: "{{ dim_pdns_pub_db_user_name}}"
+    password: "{{ dim_pdns_pub_db_user_password }}"
+    host: "localhost"
+    priv: "{{ dim_pdns_pub_db_priv }}"
+    state: present
+
+- name: Grant SELECT on pdns_pub.* to user
+  community.mysql.mysql_user:
+    name: "{{ pdns_pub_db_user_name}}"
+    password: "{{ pdns_pub_db_user_password }}"
+    host: "localhost"
+    priv: "{{ pdns_pub_db_priv }}"
+    state: present
+
+- name: Grant SELECT on pdns_int.* to user
+  community.mysql.mysql_user:
+    name: "{{ pdns_int_db_user_name}}"
+    password: "{{ pdns_int_db_user_password }}"
+    host: "localhost"
+    priv: "{{ pdns_int_db_priv }}"
+    state: present
+
+- name: Download SQL script
+  get_url:
+    url: "{{ sql_url }}"
+    dest: "{{ sql_file_path }}"
+
+- name: Execute SQL script on pdns_int database
+  community.mysql.mysql_db:
+    name: "{{ pdns_int_db_name }}"
+    state: import
+    target: "{{ sql_file_path }}"
+
+- name: Execute SQL script on pdns_pub database
+  community.mysql.mysql_db:
+    name: "{{ pdns_pub_db_name }}"
+    state: import
+    target: "{{ sql_file_path }}"

@@ -1,0 +1,42 @@
+DB_USERNAME = '{{ dim_db_user_name }}'
+DB_PASSWORD = '{{ dim_db_user_password }}'
+DB_HOST     = 'localhost'
+SQLALCHEMY_DATABASE_URI = 'mysql://%s:%s@%s/dim' % (DB_USERNAME, DB_PASSWORD, DB_HOST)
+DB_LOCK_TIMEOUT = 120
+SECRET_KEY = '{{ dim_secret_key }}'
+ 
+### Authentication
+# 'ldap' or None
+AUTHENTICATION_METHOD = None
+
+LDAP_SERVER = "ldap://testldap"
+LDAP_USER_DN = "uid=%s"
+LDAP_SEARCH_BASE = ""
+
+# Used by manage_dim ldap_sync
+LDAP_USER_BASE = ""
+LDAP_DEPARTMENT_BASE = ""
+
+# Set SECRET_KEY to a random string
+# The security of this application is compromised if SECRET_KEY is leaked
+SECRET_KEY = 'testkey'
+
+PERMANENT_SESSION_LIFETIME = 5 * 24 * 3600 # 5 days
+TEMPORARY_SESSION_LIFETIME = 24 * 3600 # 1 day
+
+### Logging
+import logging, logging.handlers, sys
+
+LOGGING_LEVEL = logging.DEBUG
+LOGGING_HANDLER = logging.StreamHandler(sys.stderr)
+
+### DNS
+DNS_DEFAULT_REFRESH  = 14400  # 4 hours
+DNS_DEFAULT_RETRY    = 3600   # 1 hour
+DNS_DEFAULT_EXPIRE   = 605000 # 7 days
+DNS_DEFAULT_MINIMUM  = 60     # 1 minute
+DNS_DEFAULT_ZONE_TTL = 86400  # 1 day (Default. TTL)
+
+# list of ipspaces which are allowed to exist multiple times in dim (layer3domains)
+# in general only rfc1918 ip should be allowed
+LAYER3DOMAIN_WHITELIST = ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16', '100.64.0.0/10']

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+cd {{ dim_repo_dest }}
+cd ..
+
+cd dim/pdns-output
+cd jdnssec-dnsjava && ../../gradlew build -x test && ../../gradlew publishToMavenLocal; cd ..
+cd jdnssec-tools && ../../gradlew build -x test && ../../gradlew publishToMavenLocal; cd ..
+cd gmp-rsa && ../../gradlew build -x test && ../../gradlew publishToMavenLocal; cd ..
+cd pdns-output && ../../gradlew shadowJar -x test; cd ..
+cp pdns-output/build/libs/pdns-output-4.0.0-all.jar /opt/dim
+cd ..

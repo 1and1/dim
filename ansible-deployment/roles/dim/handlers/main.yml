@@ -1,0 +1,10 @@
+---
+# handlers file for dim
+- name: Restart mariadb
+  systemd:
+    name: mariadb
+    state: restarted
+
+- name: Reload systemctl daemon
+  systemd:
+    daemon_reload: yes

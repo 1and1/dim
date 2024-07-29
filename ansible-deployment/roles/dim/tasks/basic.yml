@@ -1,0 +1,58 @@
+- name: Disable SELinux policy permanently
+  ansible.posix.selinux:
+    policy: targeted
+    state: disabled
+
+- name: Disable SELinux policy
+  shell:
+    cmd: setenforce 0
+  ignore_errors: true
+
+- name: Gather firewalld is installed
+  package_facts:
+    manager: auto
+
+- name: Stop and disable firewalld
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: false
+  when: "'firewalld' in ansible_facts.packages"
+
+- name: Enable epel-release
+  dnf:
+    name: epel-release
+    state: present
+
+- name: Install necessary packages
+  dnf:
+    name:
+      - wget
+      - htop
+      - bind-utils
+      - vim
+      - nload
+      - bc
+      - chkconfig
+      - initscripts
+      - python3-pip
+      - network-scripts
+    state: present
+    update_cache: true
+
+- name: Install python packages with pip
+  pip:
+    name: PyMySQL
+
+
+#### Uncomment it for Rocky linux 9
+# - name: Download network-scripts package
+#   get_url:
+#     url: "{{ network_scripts_url }}"
+#     dest: "{{ network_scripts_dest }}"
+
+# - name: Install network-scripts package
+#   dnf:
+#     name: "{{ network_scripts_dest }}/{{ network_scripts_package }}"
+#     state: present
+

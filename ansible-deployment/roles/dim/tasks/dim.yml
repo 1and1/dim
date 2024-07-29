@@ -1,0 +1,131 @@
+- name: Install necessary packages
+  dnf:
+    name:
+      - git
+      - java-1.8.0-openjdk-devel
+      - python3-mod_wsgi
+      - mod_ssl
+      - bash-completion
+    state: present
+    update_cache: true
+
+- name: Create necessary directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ dim_config_path }}"
+    - "{{ din_example_path }}"
+
+- name: Install DIM and related packages
+  dnf:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - "{{ dim_url }}"
+    - "{{ dimclient_url }}"
+    - "{{ ndcli_url }}"
+    - "{{ dim_web_url }}"
+
+- name: Clone the dim repository
+  git:
+    repo: "{{ dim_repo }}"
+    dest: "{{ dim_repo_dest }}"
+    clone: yes
+    update: yes
+
+- name: copy dim build script
+  template:
+    src: build.sh.j2
+    dest: "{{ dim_repo_dest }}/build.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Runnig build.sh script, it make more time to build (10-15 minutes)
+  debug:
+    msg: "Let's go and drink coffee, you are tired :)) "
+
+- name: Execute build.sh script
+  shell:
+    cmd: bash "{{ dim_repo_dest }}/build.sh"
+
+- name: Find JAR file in {{ wsgi_path }}
+  find:
+    paths: "{{ wsgi_path }}"
+    patterns: "*.jar"
+  register: jar_file
+
+- name: Print the jar file name
+  debug:
+    msg: "The JAR file found is {{ jar_file.files[0].path }}"
+  when: jar_file.matched > 0
+
+- name: Create pdns-output systemd unit file
+  template:
+    src: pdns-output.service.j2
+    dest: /etc/systemd/system/pdns-output.service
+    owner: root
+    group: root
+  notify: Reload systemctl daemon
+
+- name: Copy dim.cfg config file
+  template:
+    src: dim.cfg.j2
+    dest: "{{ dim_config_path }}/dim.cfg"
+    owner: root
+    group: root
+
+- name: Clear contents of {{ httpd_conf_path }}/welcome.conf
+  copy:
+    dest: "{{httpd_conf_path}}/welcome.conf"
+    content: ""
+    owner: root
+    group: root
+
+- name: Copy dim.wsgi config
+  copy:
+    src: dim.wsgi
+    dest: "{{ wsgi_path }}/dim.wsgi"
+    owner: root
+    group: root
+
+- name: Setup wsgi.conf for dim.{{ domain_name }}
+  template:
+    src: wsgi.conf.j2
+    dest: "{{ httpd_conf_path }}/dim.{{ domain_name }}.conf"
+    owner: root
+    group: root
+
+- name: Start and enable httpd service
+  systemd:
+    name: httpd
+    state: restarted
+    enabled: true
+
+- name: Create table in databases
+  shell:
+    cmd: /opt/dim/bin/manage_db init
+  ignore_errors: true
+
+- name: Create .ndclirc configuration file in {{ ansible_user }} home directory
+  copy:
+    dest: "/home/{{ ansible_user }}/.ndclirc"  # Adjust the path as needed based on your user environment
+    content: |
+      server=http://localhost/dim
+      username=user
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: Copy pdns-output config
+  template:
+    src: pdns-output.properties.j2
+    dest: "{{ dim_config_path }}/pdns-output.properties"
+
+- name: Start and enable pdns-output service
+  systemd:
+    name: pdns-output
+    state: restarted
+    enabled: true
+  notify: Reload systemctl daemon
